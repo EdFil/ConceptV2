@@ -1,0 +1,4 @@
+#pragma once
+
+/** Automatically set using CMake */
+#cmakedefine RESOURCES_DIR "@RESOURCES_DIR@"
