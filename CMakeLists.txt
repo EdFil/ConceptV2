@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 2.8.12)
 # Will make the .dll's also generate here
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-add_definitions("-std=c++11")
 set(RESOURCES_DIR "${CMAKE_SOURCE_DIR}/Resources")
 
 if(MSVC)
@@ -17,25 +16,22 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -ansi -pedantic")
 endif()
 message("CMAKE_CXX_FLAGS -> ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
 
-set(SDL_STATIC OFF CACHE BOOL "Build a static version of the library")
-add_subdirectory("Dependencies/SDL2" "${CMAKE_BINARY_DIR}/SDL2")
-set(SDL_INCLUDE_DIRS "${SDL2_BINARY_DIR}/include" "${SDL2_SOURCE_DIR}/include")
-set(SDL_LIBS SDL2main SDL2)
-
-# add_subdirectory("Engine/cmake")
+add_subdirectory("Engine/cmake")
 # add_subdirectory("Game/cmake")
 
-# Create executable
-add_executable(Concept "main.cpp")
+# # Create executable
+# add_executable(Concept "main.cpp")
+# # add_library(Concept SHARED "main.cpp")
 
-target_include_directories(Concept 
-    PUBLIC
-    "${SDL_INCLUDE_DIRS}"
-)
+# # target_include_directories(Concept 
+# #     PUBLIC
+# #     "${SDL_INCLUDE_DIRS}"
+# # )
 
-# Link external libs
-target_link_libraries(Concept 
-    PUBLIC
-    ${SDL_LIBS}
-)
+# # Link external libs
+# target_link_libraries(Concept 
+#     PUBLIC
+#     Engine
+# )

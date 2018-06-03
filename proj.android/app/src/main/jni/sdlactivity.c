@@ -1,46 +1,47 @@
 #include <jni.h>
-#include <string>
-
-JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    JNIEnv* env;
-    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
-        return -1;
-    }
-
-    // Get jclass with env->FindClass.
-    // Register methods with env->RegisterNatives.
-
-    return JNI_VERSION_1_6;
-}
+#include <stdio.h>
 
 JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLInputConnection_nativeSetComposingText(JNIEnv* env,
+Java_com_example_edfil_conceptv2_SDLInputConnection_nativeSetComposingText(JNIEnv *env,
                                                                            jobject instance,
                                                                            jstring text_,
                                                                            jint newCursorPosition) {
-    const char* text = env->GetStringUTFChars(text_, 0);
-    env->ReleaseStringUTFChars(text_, text);
+    const char *text = (*env)->GetStringUTFChars(env, text_, 0);
+
+    // TODO
+
+    (*env)->ReleaseStringUTFChars(env, text_, text);
 }
 
 JNIEXPORT void JNICALL
 Java_com_example_edfil_conceptv2_SDLInputConnection_nativeCommitText(JNIEnv *env, jobject instance,
                                                                      jstring text_,
                                                                      jint newCursorPosition) {
-    const char *text = env->GetStringUTFChars(text_, 0);
-    env->ReleaseStringUTFChars(text_, text);
+    const char *text = (*env)->GetStringUTFChars(env, text_, 0);
+
+    // TODO
+
+    (*env)->ReleaseStringUTFChars(env, text_, text);
 }
 
 JNIEXPORT jstring JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_nativeGetHint(JNIEnv *env, jclass type,
                                                            jstring name_) {
-    const char *name = env->GetStringUTFChars(name_, 0);
-    env->ReleaseStringUTFChars(name_, name);
-    return env->NewStringUTF("");
+    const char *name = (*env)->GetStringUTFChars(env, name_, 0);
+
+    // TODO
+
+    (*env)->ReleaseStringUTFChars(env, name_, name);
+
+    return (*env)->NewStringUTF(env, "");
 }
 
 JNIEXPORT jint JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_nativeRemoveJoystick(JNIEnv *env, jclass type,
                                                                   jint device_id) {
+
+    // TODO
+
 }
 
 JNIEXPORT jint JNICALL
@@ -49,20 +50,23 @@ Java_com_example_edfil_conceptv2_SDLActivity_nativeAddJoystick(JNIEnv *env, jcla
                                                                jint is_accelerometer, jint nbuttons,
                                                                jint naxes, jint nhats,
                                                                jint nballs) {
-    const char *name = env->GetStringUTFChars(name_, 0);
-    env->ReleaseStringUTFChars(name_, name);
+    const char *name = (*env)->GetStringUTFChars(env, name_, 0);
+
+    // TODO
+
+    (*env)->ReleaseStringUTFChars(env, name_, name);
 }
 
 JNIEXPORT void JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_onNativeSurfaceDestroyed(JNIEnv *env, jclass type) {
 
+    // TODO
+
 }
 
 JNIEXPORT void JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_onNativeSurfaceChanged(JNIEnv *env, jclass type) {
-
-    // TODO
-
+    printf("JNI - Surface changed\n");
 }
 
 JNIEXPORT void JNICALL
@@ -156,8 +160,11 @@ Java_com_example_edfil_conceptv2_SDLActivity_onNativeResize(JNIEnv *env, jclass 
 JNIEXPORT void JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_onNativeDropFile(JNIEnv *env, jclass type,
                                                               jstring filename_) {
-    const char *filename = env->GetStringUTFChars(filename_, 0);
-    env->ReleaseStringUTFChars(filename_, filename);
+    const char *filename = (*env)->GetStringUTFChars(env, filename_, 0);
+
+    // TODO
+
+    (*env)->ReleaseStringUTFChars(env, filename_, filename);
 }
 
 JNIEXPORT void JNICALL
@@ -188,7 +195,6 @@ Java_com_example_edfil_conceptv2_SDLActivity_nativeLowMemory(JNIEnv *env, jclass
 
 }
 
-extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_edfil_conceptv2_SDLActivity_nativeInit(JNIEnv *env, jclass type,
                                                         jobject arguments) {
