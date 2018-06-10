@@ -1,1 +1,4 @@
+include ':sdl'
 include ':app'
+
+project(':sdl').projectDir = new File(settingsDir, '../Dependencies/SDL2/android-project/app')

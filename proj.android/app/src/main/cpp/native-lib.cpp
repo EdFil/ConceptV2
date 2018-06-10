@@ -1,198 +1,95 @@
-#include <jni.h>
-#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 
-JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    JNIEnv* env;
-    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
-        return -1;
+#include "SDL.h"
+
+typedef struct Sprite
+{
+    SDL_Texture* texture;
+    Uint16 w;
+    Uint16 h;
+} Sprite;
+
+/* Adapted from SDL's testspriteminimal.c */
+Sprite LoadSprite(const char* file, SDL_Renderer* renderer)
+{
+    Sprite result;
+    result.texture = NULL;
+    result.w = 0;
+    result.h = 0;
+
+    SDL_Surface* temp;
+
+    /* Load the sprite image */
+    temp = SDL_LoadBMP(file);
+    if (temp == NULL)
+    {
+        fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
+        return result;
+    }
+    result.w = temp->w;
+    result.h = temp->h;
+
+    /* Create texture from the image */
+    result.texture = SDL_CreateTextureFromSurface(renderer, temp);
+    if (!result.texture) {
+        fprintf(stderr, "Couldn't create texture: %s\n", SDL_GetError());
+        SDL_FreeSurface(temp);
+        return result;
+    }
+    SDL_FreeSurface(temp);
+
+    return result;
+}
+
+void draw(SDL_Window* window, SDL_Renderer* renderer, const Sprite sprite)
+{
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    SDL_Rect destRect = {w/2 - sprite.w/2, h/2 - sprite.h/2, sprite.w, sprite.h};
+    /* Blit the sprite onto the screen */
+    SDL_RenderCopy(renderer, sprite.texture, NULL, &destRect);
+}
+
+int main(int argc, char *argv[])
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+
+    if(SDL_CreateWindowAndRenderer(0, 0, 0, &window, &renderer) < 0)
+        exit(2);
+
+    Sprite sprite = LoadSprite("image.bmp", renderer);
+    if(sprite.texture == NULL)
+        exit(2);
+
+    /* Main render loop */
+    Uint8 done = 0;
+    SDL_Event event;
+    while(!done)
+    {
+        /* Check for events */
+        while(SDL_PollEvent(&event))
+        {
+            if(event.type == SDL_QUIT || event.type == SDL_KEYDOWN || event.type == SDL_FINGERDOWN)
+            {
+                done = 1;
+            }
+        }
+
+
+        /* Draw a gray background */
+        SDL_SetRenderDrawColor(renderer, 0xA0, 0xA0, 0xA0, 0xFF);
+        SDL_RenderClear(renderer);
+
+        draw(window, renderer, sprite);
+
+        /* Update the screen! */
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay(10);
     }
 
-    // Get jclass with env->FindClass.
-    // Register methods with env->RegisterNatives.
-
-    return JNI_VERSION_1_6;
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLInputConnection_nativeSetComposingText(JNIEnv* env,
-                                                                           jobject instance,
-                                                                           jstring text_,
-                                                                           jint newCursorPosition) {
-    const char* text = env->GetStringUTFChars(text_, 0);
-    env->ReleaseStringUTFChars(text_, text);
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLInputConnection_nativeCommitText(JNIEnv *env, jobject instance,
-                                                                     jstring text_,
-                                                                     jint newCursorPosition) {
-    const char *text = env->GetStringUTFChars(text_, 0);
-    env->ReleaseStringUTFChars(text_, text);
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeGetHint(JNIEnv *env, jclass type,
-                                                           jstring name_) {
-    const char *name = env->GetStringUTFChars(name_, 0);
-    env->ReleaseStringUTFChars(name_, name);
-    return env->NewStringUTF("");
-}
-
-JNIEXPORT jint JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeRemoveJoystick(JNIEnv *env, jclass type,
-                                                                  jint device_id) {
-}
-
-JNIEXPORT jint JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeAddJoystick(JNIEnv *env, jclass type,
-                                                               jint device_id, jstring name_,
-                                                               jint is_accelerometer, jint nbuttons,
-                                                               jint naxes, jint nhats,
-                                                               jint nballs) {
-    const char *name = env->GetStringUTFChars(name_, 0);
-    env->ReleaseStringUTFChars(name_, name);
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeSurfaceDestroyed(JNIEnv *env, jclass type) {
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeSurfaceChanged(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeAccel(JNIEnv *env, jclass type, jfloat x,
-                                                           jfloat y, jfloat z) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeTouch(JNIEnv *env, jclass type,
-                                                           jint touchDevId, jint pointerFingerId,
-                                                           jint action, jfloat x, jfloat y,
-                                                           jfloat p) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeMouse(JNIEnv *env, jclass type, jint button,
-                                                           jint action, jfloat x, jfloat y) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeKeyboardFocusLost(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeKeyUp(JNIEnv *env, jclass type, jint keycode) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeKeyDown(JNIEnv *env, jclass type,
-                                                             jint keycode) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeHat(JNIEnv *env, jclass type, jint device_id,
-                                                         jint hat_id, jint x, jint y) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeJoy(JNIEnv *env, jclass type, jint device_id,
-                                                         jint axis, jfloat value) {
-
-    // TODO
-
-}
-
-JNIEXPORT jint JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativePadUp(JNIEnv *env, jclass type, jint device_id,
-                                                           jint keycode) {
-
-    // TODO
-
-}
-
-JNIEXPORT jint JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativePadDown(JNIEnv *env, jclass type,
-                                                             jint device_id, jint keycode) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeResize(JNIEnv *env, jclass type, jint x,
-                                                            jint y, jint format, jfloat rate) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_onNativeDropFile(JNIEnv *env, jclass type,
-                                                              jstring filename_) {
-    const char *filename = env->GetStringUTFChars(filename_, 0);
-    env->ReleaseStringUTFChars(filename_, filename);
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeResume(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativePause(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeQuit(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeLowMemory(JNIEnv *env, jclass type) {
-
-    // TODO
-
-}
-
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_example_edfil_conceptv2_SDLActivity_nativeInit(JNIEnv *env, jclass type,
-                                                        jobject arguments) {
-
-    // TODO
-
+    exit(0);
 }
