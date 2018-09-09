@@ -17,7 +17,7 @@
         },
         {
             "taskName": "make",
-            "args": ["cmake --build ."],
+            "args": ["cmake --build .;"],
             "isBuildCommand": true            
         }
     ]

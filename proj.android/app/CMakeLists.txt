@@ -2,10 +2,24 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set(RESOURCES_DIR "")
 
-#add_subdirectory("${CMAKE_SOURCE_DIR}/../../Game/cmake" "${CMAKE_BINARY_DIR}/Game")
+# SDL Dependency
+set(SDL_SHARED ON CACHE BOOL "Build a shared version of the library")
+set(SDL_STATIC OFF CACHE BOOL "Build a static version of the library")
+add_subdirectory("${CMAKE_SOURCE_DIR}/../../dependencies/Engine/dependencies/SDL2" "${CMAKE_BINARY_DIR}/SDL2")
+set(SDL_INCLUDE_DIRS "${SDL2_BINARY_DIR}/include" "${SDL2_SOURCE_DIR}/include")
+set(SDL_LIBS SDL2 SDL2main)
 
-add_library(native-lib SHARED
-    #"src/main/cpp/native-lib.cpp"
-    "src/main/jni/sdlactivity.c")
+message(STATUS "SDL2_BINARY_DIR -> ${SDL2_BINARY_DIR}")
+message(STATUS "SDL_LIBS -> ${SDL_LIBS}")
 
-#target_link_libraries(native-lib Game Engine)
+add_library(main SHARED
+    "src/main/jni/JNI.cpp"
+    "src/main/jni/sdlactivity.cpp")
+
+# Include directotories
+target_include_directories(main
+    PUBLIC
+    "${SDL_INCLUDE_DIRS}"
+)
+
+target_link_libraries(main ${SDL_LIBS})
