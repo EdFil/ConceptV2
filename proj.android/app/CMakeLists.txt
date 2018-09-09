@@ -14,7 +14,7 @@ message(STATUS "SDL_LIBS -> ${SDL_LIBS}")
 
 add_library(main SHARED
     "src/main/jni/JNI.cpp"
-    "src/main/jni/sdlactivity.cpp")
+    "src/main/jni/main.cpp")
 
 # Include directotories
 target_include_directories(main

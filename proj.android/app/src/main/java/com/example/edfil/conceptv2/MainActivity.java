@@ -22,4 +22,12 @@ public class MainActivity extends SDLActivity {
                 "main"
         };
     }
+
+    /**
+     * This method returns the name of the application entry point
+     * It can be overridden by derived classes.
+     */
+    protected String getMainFunction() {
+        return "main";
+    }
 }
